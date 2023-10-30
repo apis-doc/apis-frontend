@@ -7,7 +7,9 @@
         <common-aside/>
       </el-aside>
       <el-container>
-        <el-header>Header</el-header>
+        <el-header>
+          <common-header/>
+        </el-header>
         <el-main>
           <router-view/>
         </el-main>
@@ -15,9 +17,9 @@
           <nav>
             <router-link to="/vue">Vue</router-link>
             |
-            <router-link to="/main/user">User</router-link>
+            <a href="https://element.eleme.cn/#/zh-CN/component/menu"> element-ui</a>
             |
-            <router-link to="/main">Main</router-link>
+            <a href="https://less.bootcss.com/"> less-css</a>
             |
             <router-link to="/about">About</router-link>
           </nav>
@@ -29,17 +31,26 @@
 
 <script>
 import CommonAside from '../components/CommonAside.vue'
+import CommonHeader from '@/components/CommonHeader.vue'
 
 export default {
   data () {
     return {}
   },
   components: {
-    CommonAside
+    CommonAside,
+    CommonHeader
   }
 }
 
 </script>
 
-<style>
+<style lang="less" scoped>
+.el-header {
+  padding: 0;
+}
+
+a {
+  color: #777;
+}
 </style>
