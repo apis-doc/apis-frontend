@@ -1,15 +1,30 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import VueHelloWorld from '../views/vue.vue'
+import UserView from '@/views/UserView.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
+    // 作为登录页
     path: '/',
     name: 'home',
-    component: HomeView
+    component: VueHelloWorld
   },
+  {
+    path: '/main',
+    component: () => import(/* webpackChunkName: "about" */ '../views/MainView.vue'),
+    children: [
+      { path: 'user', component: UserView }
+    ]
+  },
+  {
+    path: '/vue',
+    name: 'vue',
+    component: VueHelloWorld
+  },
+
   {
     path: '/about',
     name: 'about',
