@@ -2,6 +2,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueHelloWorld from '../views/vue.vue'
 import UserView from '@/views/UserView.vue'
+import ApiView from '@/views/ApiView.vue'
+import ProjectView from '@/views/ProjectView.vue'
+import LogView from '@/views/LogView.vue'
+import MeView from '@/views/MeView.vue'
+import UserConfigView from '@/views/UserConfigView.vue'
+import HomeView from '@/views/HomeView.vue'
 
 Vue.use(VueRouter)
 
@@ -13,10 +19,37 @@ const routes = [
     component: VueHelloWorld
   },
   {
-    path: '/main',
+    path: '/api-manage',
     component: () => import(/* webpackChunkName: "about" */ '../views/MainView.vue'),
     children: [
-      { path: 'user', component: UserView }
+      {
+        path: 'api',
+        component: ApiView
+      },
+      {
+        path: 'project',
+        component: ProjectView
+      },
+      {
+        path: 'log',
+        component: LogView
+      },
+      {
+        path: 'me',
+        component: MeView
+      },
+      {
+        path: 'user-config',
+        component: UserConfigView
+      },
+      {
+        path: 'home',
+        component: HomeView
+      },
+      {
+        path: 'users',
+        component: UserView
+      }
     ]
   },
   {
