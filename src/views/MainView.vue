@@ -21,6 +21,8 @@
             |
             <a href="https://less.bootcss.com/"> less-css</a>
             |
+            <a href="http://www.axios-js.com/zh-cn/docs/index.html"> axios</a>
+            |
             <router-link to="/about">About</router-link>
           </nav>
         </el-footer>

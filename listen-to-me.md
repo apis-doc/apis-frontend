@@ -11,3 +11,11 @@
 # https://less.bootcss.com/
 # npm i less@4.1.2 less-loader@6.0.0 --legacy-peer-deps
 ```
+
+- ajax-axios
+
+```python
+# https://www.axios-http.cn/docs/intro
+# http://www.axios-js.com/zh-cn/docs/index.html
+# npm i axios --legacy-peer-deps
+```

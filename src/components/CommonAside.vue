@@ -71,6 +71,8 @@
 </style>
 
 <script>
+import { redirectPage } from '@/api'
+
 export default {
   data () {
     return {
@@ -85,11 +87,7 @@ export default {
       console.log(key, keyPath)
     },
     clickMenu (url) {
-      const jumpUrl = '/api-manage/' + url
-      // 解决重复点击页面报错
-      if (this.$router.history.current.path !== jumpUrl) {
-        this.$router.push(jumpUrl)
-      }
+      redirectPage(url, this.$router, true)
     }
   }
 }

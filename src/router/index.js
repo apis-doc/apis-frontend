@@ -8,6 +8,7 @@ import LogView from '@/views/LogView.vue'
 import MeView from '@/views/MeView.vue'
 import UserConfigView from '@/views/UserConfigView.vue'
 import HomeView from '@/views/HomeView.vue'
+import LoginView from '@/views/LoginView.vue'
 
 Vue.use(VueRouter)
 
@@ -16,7 +17,7 @@ const routes = [
     // 作为登录页
     path: '/',
     name: 'home',
-    component: VueHelloWorld
+    component: LoginView
   },
   {
     path: '/api-manage',
