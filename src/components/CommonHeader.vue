@@ -9,7 +9,6 @@ export default {
 <template>
   <div class="header-container">
     <div class="l-content">
-      header-left
     </div>
     <div class="r-content">
       <!--设置为一行-->
@@ -19,6 +18,7 @@ export default {
             <img src="../../src/assets/user.jpg" alt="" class="user-image">
           </span>
           <el-dropdown-menu slot="dropdown">
+            <!-- todo 具体的操作-->
             <el-dropdown-item>基本信息</el-dropdown-item>
             <el-dropdown-item disabled>配置信息</el-dropdown-item>
             <el-dropdown-item divided>退出</el-dropdown-item>
