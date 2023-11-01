@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-view/>
-    <div>
+    <div class="top">
       <div class="top-info">
         <el-alert
           title="日志管理: 您可查询端侧接口调用信息, 并于此处选择某条记录为某项目的接口"
