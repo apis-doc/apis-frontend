@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-view/>
-    <div>
+    <div class="top">
       <div class="top-info">
         <el-alert
           title="更多用户: 您可以在此处查询或筛选项目或接口的维护人姓名,联系方式等内容"
@@ -9,7 +9,7 @@
         </el-alert>
       </div>
       <div class="top-action">
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form :inline="true" :model="formInline" class="demo-form-inline" ref="formInline">
           <el-form-item label="用户名">
             <el-input v-model="formInline.username" placeholder="用户名"></el-input>
           </el-form-item>
@@ -21,6 +21,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit">查询</el-button>
+            <el-button @click="resetForm('formInline')">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -78,91 +79,68 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="40" :pager-count="5" :current-page="2">
+          @current-change="handleCurrentChange"
+          :total="pageConfig.total" :page-size="pageConfig.size" :current-page="pageConfig.current">
         </el-pagination>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { getView } from '@/api/common'
+// import { handleResponse, getData, getView } from '@/api/common'
+
+const formInit = {
+  name: '',
+  username: '',
+  is_active: true
+}
+
 export default {
   data () {
     return {
-      formInline: {
-        name: '',
-        username: '',
-        is_active: true
+      pageConfig: {
+        size: 1,
+        total: 4,
+        current: 1
       },
-      tableData: [{
-        username: '111111',
-        email: '33298909090@qq.com',
-        is_active: '是',
-        date_joined: '2016-05-02',
-        last_login: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        username: '111111',
-        email: '33298909090@qq.com',
-        is_active: '是',
-        date_joined: '2016-05-02',
-        last_login: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        username: '111111',
-        email: '33298909090@qq.com',
-        is_active: '否',
-        date_joined: '2016-05-02',
-        last_login: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        username: '111111',
-        email: '33298909090@qq.com',
-        is_active: '是',
-        date_joined: '2016-05-02',
-        last_login: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }]
+      formInline: Object.assign({}, formInit),
+      tableData: []
     }
   },
   methods: {
-    // tableRowClassName ({
-    //   row
-    // }) {
-    //   // eslint-disable-next-line camelcase
-    //   if (row.is_active === '否') {
-    //     return 'warning-row'
-    //   }
-    //   return ''
-    // },
     indexMethod (index) {
       return index + 1
     },
-    onSubmit () {
-      console.log('submit!')
-    },
     filterTag (value, row) {
       return row.is_active === value
+    },
+    resetForm (formName) {
+      this.formInline = Object.assign({}, formInit)
+    },
+    onSubmit () {
+      this.search()
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.pageConfig.current = val
+      this.search()
+    },
+    search () {
+      getView('user', this, this.formInline, this.pageConfig)
     }
+  },
+  mounted () {
+    this.search()
   }
 }
 </script>
 
-<style>
-.el-table .warning-row {
-  background: #fde6e8;
-}
-
-.el-table .success-row {
-  background: #f0f9eb;
-}
+<style scoped>
 
 .top-action {
   padding: 10px 0px 10px 0px;
-  float: left;
+  text-align: left;
 }
 
 .content {

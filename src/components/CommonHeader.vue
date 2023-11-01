@@ -1,5 +1,5 @@
 <script>
-import { deleteData, handleResponse, redirectPage, clearCookies } from '@/api'
+import { deleteData, handleResponse, redirectPage, clearCookies } from '@/api/common'
 import Cookie from 'js-cookie'
 
 export default {

@@ -274,7 +274,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-table .warning-row {
   background: #fde6e8;
 }
@@ -285,7 +285,7 @@ export default {
 
 .top-action {
   padding: 10px 0px 10px 0px;
-  float: left;
+  text-align: left;
 }
 
 .content {

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { postData, handleResponse, getData } from '../api'
+import { postData, handleResponse, getData } from '../api/common'
 import Cookie from 'js-cookie'
 
 export default {
@@ -51,21 +51,19 @@ export default {
       postData('/auth', this.form).then((responseData) => {
         const rspLogin = handleResponse(responseData)
         if (!rspLogin.result) {
-          this.$notify.error({
+          return this.$notify.error({
             title: '登录失败',
             message: rspLogin.msg
           })
-          return
         }
         // 获取用户信息等
         getData('/auth', {}).then((responseData) => {
           const rspInfo = handleResponse(responseData)
           if (!rspInfo.result) {
-            this.$notify.error({
+            return this.$notify.error({
               title: '获取用户信息失败',
               message: rspInfo.msg
             })
-            return
           }
           const userInfo = rspInfo.data.user
           console.log(userInfo)

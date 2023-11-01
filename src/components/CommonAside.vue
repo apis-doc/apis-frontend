@@ -71,7 +71,7 @@
 </style>
 
 <script>
-import { redirectPage } from '@/api'
+import { redirectPage } from '@/api/common'
 
 export default {
   data () {

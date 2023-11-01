@@ -2,7 +2,7 @@ import http from '../utils/request'
 import Cookie from 'js-cookie'
 
 export const getData = (uri, data) => {
-  return http.get(uri, data)
+  return http.get(uri, { params: data })
 }
 
 export const postData = (uri, data) => {
@@ -47,4 +47,29 @@ export const clearCookies = () => {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
     console.log(Cookie.get())
   }
+}
+
+export const getView = (uri, vueObj, formData, pageData) => {
+  const data = Object.assign({}, formData)
+  data.page_number = pageData.current
+  data.page_size = pageData.size
+  // 移除空元素
+  const params = Object.keys(data)
+    .filter((key) => data[key] !== null && data[key] !== undefined && data[key] !== '')
+    .reduce((acc, key) => ({
+      ...acc,
+      [key]: data[key]
+    }), {})
+  console.log(params)
+  getData(uri, params).then((response) => {
+    const rspInfo = handleResponse(response, true)
+    if (!rspInfo.result) {
+      return vueObj.$notify.error({
+        title: '查询失败',
+        message: rspInfo.msg
+      })
+    }
+    vueObj.tableData = rspInfo.data.show_info
+    vueObj.pageConfig.total = rspInfo.data.count
+  })
 }
