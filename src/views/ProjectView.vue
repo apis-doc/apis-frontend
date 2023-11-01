@@ -106,7 +106,8 @@
   </div>
 </template>
 <script>
-import { getView } from '@/api/common'
+import { getView, redirectPage } from '@/api/common'
+import Cookie from 'js-cookie'
 
 export default {
   data () {
@@ -137,6 +138,11 @@ export default {
       console.log(`当前页: ${val}`)
       this.pageConfig.current = val
       this.search()
+    },
+    handleSearch (id) {
+      console.log('redirect to api from project!!!')
+      Cookie.set('idWithProjectToApi', id)
+      redirectPage('api', this.$router, true)
     },
     search () {
       getView('project', this, this.formInline, this.pageConfig)

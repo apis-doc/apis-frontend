@@ -4,8 +4,8 @@
     <div class="top">
       <div class="top-info">
         <el-alert
-          title="接口管理: 您可以查看/修改某接口的详情"
-          type="success">
+          title="接口管理: 您可以查看/修改某接口的详情; 请移至日志管理页新增接口; 接口文档请于项目管理页查看;"
+          type="error">
         </el-alert>
       </div>
       <div class="top-action">
@@ -76,6 +76,7 @@
           <el-form-item>
             <el-button type="primary" @click="onSubmit">查询</el-button>
             <el-button @click="resetForm('formInline')">重置</el-button>
+            <el-button type="danger" @click="addApi">新增接口</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -181,7 +182,8 @@
   </div>
 </template>
 <script>
-import { getView } from '@/api/common'
+import { getView, redirectPage } from '@/api/common'
+import Cookie from 'js-cookie'
 
 export default {
   data () {
@@ -208,6 +210,9 @@ export default {
     onSubmit () {
       this.search()
     },
+    addApi () {
+      redirectPage('log', this.$router, true)
+    },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
       this.pageConfig.current = val
@@ -218,7 +223,14 @@ export default {
     }
   },
   mounted () {
+    // To be upgraded: 注意从项目页跳过来需要从cookie获取owner_id
+    const cName = 'idWithProjectToApi'
+    const pidRedirectFromProject = Cookie.get(cName)
+    Cookie.remove(cName)
+    console.log('idWithProjectToApi: ', pidRedirectFromProject)
+    this.formInline.owner_id = pidRedirectFromProject || this.formInline.owner_id
     this.search()
+    this.formInline.owner_id = null
   }
 }
 </script>
