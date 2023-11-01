@@ -100,8 +100,8 @@ export default {
   data () {
     return {
       pageConfig: {
-        size: 1,
-        total: 4,
+        size: 10,
+        total: 0,
         current: 1
       },
       formInline: Object.assign({}, formInit),
