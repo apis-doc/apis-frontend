@@ -158,11 +158,12 @@ export default {
 }
 
 .top-action {
-  padding: 10px 0px 10px 0px;
+  padding: 20px 20px 0px 20px;
   text-align: left;
 }
 
 .content {
+  padding: 0px 20px 10px 20px;
   position: relative;
 
   .el-tag {
