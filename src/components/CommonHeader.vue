@@ -4,8 +4,9 @@ import Cookie from 'js-cookie'
 
 export default {
   data () {
+    const user = JSON.parse(Cookie.get('userInfo'))
     return {
-      welcome: Cookie.get('username') + ', 欢迎您!'
+      welcome: user.name ? user.name + '(' + user.username + '), 欢迎您!' : user.username + ', 欢迎您'
     }
   },
   methods: {

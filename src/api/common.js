@@ -60,7 +60,7 @@ export const getView = (uri, vueObj, formData, pageData) => {
       ...acc,
       [key]: data[key]
     }), {})
-  console.log(params)
+  console.log('get', uri, params)
   getData(uri, params).then((response) => {
     const rspInfo = handleResponse(response, true)
     if (!rspInfo.result) {
@@ -71,5 +71,19 @@ export const getView = (uri, vueObj, formData, pageData) => {
     }
     vueObj.tableData = rspInfo.data.show_info
     vueObj.pageConfig.total = rspInfo.data.count
+  })
+}
+
+export const putView = (uri, vueObj, formData) => {
+  const params = Object.assign({}, formData)
+  console.log('put', uri, params)
+  putData(uri, params).then((response) => {
+    const rspInfo = handleResponse(response, true)
+    if (!rspInfo.result) {
+      return vueObj.$notify.error({
+        title: '更新失败',
+        message: rspInfo.errMsg
+      })
+    }
   })
 }

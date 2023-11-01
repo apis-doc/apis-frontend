@@ -68,7 +68,7 @@ export default {
           const userInfo = rspInfo.data.user
           console.log(userInfo)
           Cookie.set('username', userInfo.username)
-          Cookie.set('userInfo', userInfo)
+          Cookie.set('userInfo', JSON.stringify(userInfo))
           // todo 映射关系怎么办
           this.$router.push('/api-manage/home')
         })

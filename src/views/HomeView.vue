@@ -1,12 +1,18 @@
 <template>
   <div>
     <router-view/>
-    <h1>home-main</h1>
-    <h3>
-      我最新操作项目*2, 我最新项目的接口文档*3...
-      统计等
-    </h3>
-
+    <div class="top">
+      <div class="top-info">
+        <el-alert
+          title="首页: 待开发!!!"
+          type="error">
+        </el-alert>
+        <el-alert
+          title="目前想要做的功能是显示最近做的项目和最近更新/创建的接口, 接口文档的生成; 以及一些数据统计等"
+          type="primary">
+        </el-alert>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
