@@ -74,7 +74,7 @@ export const getView = (uri, vueObj, formData, pageData) => {
   })
 }
 
-export const putView = (uri, vueObj, formData) => {
+export const putView = (uri, vueObj, formData, callback) => {
   const params = Object.assign({}, formData)
   console.log('put', uri, params)
   putData(uri, params).then((response) => {
@@ -84,6 +84,27 @@ export const putView = (uri, vueObj, formData) => {
         title: '更新失败',
         message: rspInfo.errMsg
       })
+    }
+    if (callback !== undefined) {
+      callback()
+    }
+  })
+}
+
+export const postView = (uri, vueObj, formData, callback) => {
+  const params = Object.assign({}, formData)
+  console.log('post', uri, params)
+  postData(uri, params).then((response) => {
+    const rspInfo = handleResponse(response, true)
+    if (!rspInfo.result) {
+      return vueObj.$notify.error({
+        title: '新增失败',
+        message: rspInfo.errMsg
+      })
+    }
+    // To be upgraded: 必须在这里回调,否则是异步的
+    if (callback !== undefined) {
+      callback()
     }
   })
 }

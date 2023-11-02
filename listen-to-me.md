@@ -19,3 +19,8 @@
 # http://www.axios-js.com/zh-cn/docs/index.html
 # npm i axios --legacy-peer-deps
 ```
+
+https://element.eleme.cn/2.13/#/zh-CN/component/carousel
+[---]: # (https://element.eleme.cn/2.13/#/zh-CN/component/select)
+
+https://element.eleme.cn/2.13/#/zh-CN/component/collapse

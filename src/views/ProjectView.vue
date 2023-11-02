@@ -23,9 +23,34 @@
             <el-input v-model="formInline.host" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">查询</el-button>
+            <el-button type="primary" @click="onSearch">查询</el-button>
             <el-button @click="resetForm('formInline')">重置</el-button>
-            <el-button type="danger" @click="onSubmit">新增</el-button>
+            <!--     修改和新增表单       -->
+            <el-button type="danger" @click="onAdd">新增</el-button>
+            <el-dialog title="编辑项目" :visible.sync="dialogFormVisible">
+              <el-form :model="dialogForm" class="addForm">
+                <el-form-item label="编码" :label-width="formLabelWidth">
+                  <el-input v-model="dialogForm.code" placeholder="请输入英文名称"></el-input>
+                </el-form-item>
+                <el-form-item label="名称" :label-width="formLabelWidth">
+                  <el-input v-model="dialogForm.name" placeholder="请输入名称"></el-input>
+                </el-form-item>
+                <el-form-item label="IP" :label-width="formLabelWidth">
+                  <el-input v-model="dialogForm.host" placeholder="请输入绑定的IP"></el-input>
+                </el-form-item>
+                <el-form-item label="端口" :label-width="formLabelWidth">
+                  <el-input v-model="dialogForm.port" placeholder="请输入测试服务绑定的端口"></el-input>
+                </el-form-item>
+                <el-form-item label="维护人" :label-width="formLabelWidth">
+                  <el-input v-model="dialogForm.maintainer" placeholder="请输入维护人"></el-input>
+                </el-form-item>
+              </el-form>
+              <!--     新增表单的确认按钮         -->
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="onSubmit">确 定</el-button>
+              </div>
+            </el-dialog>
           </el-form-item>
         </el-form>
       </div>
@@ -33,7 +58,7 @@
     <div class="content">
       <div class="common-table">
         <el-table
-          :data="tableData"
+          :data="tableData" ref="tableData"
           border resizable stripe
           style="width: 100%">
           <el-table-column type="expand">
@@ -87,8 +112,8 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleGetDocs(scope.row)" type="text" size="small">修改</el-button>
-              <el-button @click="handleSearch(scope.row.id)" type="text" size="small">查询接口</el-button>
+              <el-button @click="onEdit(scope.row)" type="text" size="small">修改</el-button>
+              <el-button @click="handleSearchApiById(scope.row.id)" type="text" size="small">查询接口</el-button>
               <el-button @click="handleGetDocs(scope.row)" type="text" size="small">生成接口文档</el-button>
             </template>
           </el-table-column>
@@ -106,7 +131,7 @@
   </div>
 </template>
 <script>
-import { getView, redirectPage } from '@/api/common'
+import { getView, redirectPage, postView, putView } from '@/api/common'
 import Cookie from 'js-cookie'
 
 export default {
@@ -118,7 +143,11 @@ export default {
         size: 10,
         total: 0,
         current: 1
-      }
+      },
+      dialogFormVisible: false,
+      dialogForm: {},
+      isAddOfBtn: 1,
+      formLabelWidth: '120px'
     }
   },
   methods: {
@@ -131,7 +160,7 @@ export default {
     resetForm (formName) {
       this.formInline = Object.assign({}, {})
     },
-    onSubmit () {
+    onSearch () {
       this.search()
     },
     handleCurrentChange (val) {
@@ -139,13 +168,42 @@ export default {
       this.pageConfig.current = val
       this.search()
     },
-    handleSearch (id) {
+    handleSearchApiById (id) {
       console.log('redirect to api from project!!!')
       Cookie.set('idWithProjectToApi', id)
       redirectPage('api', this.$router, true)
     },
     search () {
       getView('project', this, this.formInline, this.pageConfig)
+    },
+    // 新增按钮事件
+    onAdd () {
+      console.log('add button!')
+      this.isAddOfBtn = 1
+      this.dialogFormVisible = true
+      this.dialogForm = {}
+      this.dialogForm.maintainer = Cookie.get('username')
+    },
+    // 编辑按钮事件
+    onEdit (row) {
+      console.log('edit button!')
+      this.isAddOfBtn = 0
+      this.dialogFormVisible = true
+      this.dialogForm = Object.assign({}, row)
+      this.dialogForm.maintainer = this.dialogForm.maintainer || Cookie.get('username')
+    },
+    // 编辑和新增表单内的确定事件
+    onSubmit () {
+      console.log('submit button!', this.isAddOfBtn, this.dialogForm)
+      if (this.isAddOfBtn) {
+        postView('project', this, this.dialogForm, this.search)
+      } else {
+        putView('project', this, this.dialogForm, this.search)
+      }
+      this.dialogFormVisible = false
+      this.$notify.success({
+        title: '操作成功'
+      })
     }
   },
   mounted () {
@@ -182,6 +240,12 @@ export default {
     buttom: 0;
     right: 20px;
     padding: 10px 0px 10px 0px;
+  }
+
+  .addForm {
+    .el-form-item__content {
+      margin: 10px 0px 0px 0px;
+    }
   }
 }
 </style>
