@@ -17,61 +17,54 @@
             <el-input v-model="formInline.code" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item label="所属项目">
+
             <el-select v-model="formInline.method" placeholder="所属项目">
               <el-option label="区域一" value="shanghai"></el-option>
               <el-option label="区域二" value="beijing"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="formInline.state" placeholder="状态">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+            <el-select v-model="formInline.apiState" clearable placeholder="请选择">
+              <el-option v-for="item in this.apiState" :key="item.value" :label="item.label"
+                         :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="接口类型">
             <el-select v-model="formInline.api_type" placeholder="接口类型">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+              <el-option v-for="item in this.apiType" :key="item.value" :label="item.label"
+                         :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="请求类型">
             <el-select v-model="formInline.method" placeholder="请求类型">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+              <el-option v-for="item in this.methodType" :key="item.value" :label="item.label"
+                         :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="method">
             <el-input v-model="formInline.interface_id" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item label="更新时间">
-            <el-col :span="11">
-              <el-form-item prop="update_time">
-                <el-date-picker type="date" placeholder="选择日期" v-model="formInline.update_time"
-                                style="width: 100%;"></el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-form-item prop="update_time">
-                <el-time-picker placeholder="选择时间" v-model="formInline.update_time"
-                                style="width: 100%;"></el-time-picker>
-              </el-form-item>
-            </el-col>
+            <div class="block">
+              <el-date-picker
+                v-model="formInline.update_time"
+                type="datetimerange"
+                align="right"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['12:00:00', '08:00:00']">
+              </el-date-picker>
+            </div>
           </el-form-item>
           <el-form-item label="创建时间">
-            <el-col :span="11">
-              <el-form-item prop="create_time">
-                <el-date-picker type="date" placeholder="选择日期" v-model="formInline.create_time"
-                                style="width: 100%;"></el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-form-item prop="create_time">
-                <el-time-picker placeholder="选择时间" v-model="formInline.create_time"
-                                style="width: 100%;"></el-time-picker>
-              </el-form-item>
-            </el-col>
+            <el-date-picker
+              v-model="formInline.create_time"
+              type="datetimerange"
+              align="right"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :default-time="['12:00:00', '08:00:00']">
+            </el-date-picker>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit">查询</el-button>
@@ -182,7 +175,7 @@
   </div>
 </template>
 <script>
-import { getView, redirectPage } from '@/api/common'
+import { getData, getView, handleResponse, redirectPage } from '@/api/common'
 import Cookie from 'js-cookie'
 
 export default {
@@ -194,7 +187,11 @@ export default {
         size: 10,
         total: 0,
         current: 1
-      }
+      },
+      apiState: [],
+      apiType: [],
+      methodType: [],
+      paramType: []
     }
   },
   methods: {
@@ -223,6 +220,16 @@ export default {
     }
   },
   mounted () {
+    // To be upgraded: 下拉菜单选项信息获取
+    getData('/auth', {}).then((responseData) => {
+      const rspInfo = handleResponse(responseData)
+      if (rspInfo.result) {
+        this.apiState = rspInfo.data.api_state
+        this.apiType = rspInfo.data.api_type
+        this.methodType = rspInfo.data.method_type
+        this.paramType = rspInfo.data.param_type
+      }
+    })
     // To be upgraded: 注意从项目页跳过来需要从cookie获取owner_id
     const cName = 'idWithProjectToApi'
     const pidRedirectFromProject = Cookie.get(cName)

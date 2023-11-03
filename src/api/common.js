@@ -61,7 +61,7 @@ export const getView = (uri, vueObj, formData, pageData) => {
       [key]: data[key]
     }), {})
   console.log('get', uri, params)
-  getData(uri, params).then((response) => {
+  return getData(uri, params).then((response) => {
     const rspInfo = handleResponse(response, true)
     if (!rspInfo.result) {
       return vueObj.$notify.error({
@@ -94,7 +94,7 @@ export const putView = (uri, vueObj, formData, callback) => {
 export const postView = (uri, vueObj, formData, callback) => {
   const params = Object.assign({}, formData)
   console.log('post', uri, params)
-  postData(uri, params).then((response) => {
+  return postData(uri, params).then((response) => {
     const rspInfo = handleResponse(response, true)
     if (!rspInfo.result) {
       return vueObj.$notify.error({
