@@ -102,7 +102,7 @@
             <!--     新增接口       -->
             <el-dialog
               title="新增接口: 您可从刚选定的日志中提取接口信息"
-              :visible.sync="dialogVisible" :append-to-body="true" class="addFm">
+              :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%">
               <el-collapse v-model="activeName" accordion>
                 <!--       Api         -->
                 <el-collapse-item title="确认基本信息" name="1">
@@ -220,14 +220,153 @@
                     </el-form-item>
                   </el-form>
                 </el-collapse-item>
-                <el-collapse-item title="构建请求参数" name="2">
-                  <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                  <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
+                <!--       Req         -->
+                <el-collapse-item title="构建请求参数: 请于成功创建基本信息后进行" name="2">
+                  <el-table
+                    :data="this.reqTable"
+                    style="width: 100%;margin-bottom: 20px;"
+                    rowKey="id" size="medium"
+                    border fit
+                    default-expand-all
+                    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                    <el-table-column
+                      prop="code"
+                      label="代码"
+                      sortable
+                      width="200">
+                    </el-table-column>
+                    <el-table-column
+                      prop="param_type"
+                      label="类型"
+                      sortable
+                      width="80">
+                    </el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="名称"
+                      sortable
+                      width="180">
+                      <template slot-scope="rq">
+                        <el-input v-model="rq.row.name"></el-input>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="is_require"
+                      label="必填" width="120">
+                      <template slot-scope="rq">
+                        <el-switch
+                          v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949"
+                          active-text="Y" inactive-text="N">
+                        </el-switch>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="is_null"
+                      label="空值" width="120">
+                      <template slot-scope="rq">
+                        <el-switch
+                          v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949"
+                          active-text="Y" inactive-text="N">
+                        </el-switch>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="is_service"
+                      label="有效" width="120">
+                      <template slot-scope="rq">
+                        <el-switch
+                          v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
+                          active-text="Y" inactive-text="N">
+                        </el-switch>
+                      </template>
+                    </el-table-column>
+                    <!--                    <el-table-column-->
+                    <!--                      prop="example"-->
+                    <!--                      label="示例"-->
+                    <!--                      sortable-->
+                    <!--                      width="180">-->
+                    <!--                      <template slot-scope="rq">-->
+                    <!--                        <el-input v-model="rq.row.example"></el-input>-->
+                    <!--                      </template>-->
+                    <!--                    </el-table-column>-->
+                  </el-table>
+                  <div class="rspPmAction" style="text-align: right">
+                    <el-button type="primary" @click="handleSaveParams('req')">保存</el-button>
+                  </div>
                 </el-collapse-item>
-                <el-collapse-item title="构建返回参数" name="3">
-                  <div>简化流程：设计简洁直观的操作流程；</div>
-                  <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-                  <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+                <!--       Rsp         -->
+                <el-collapse-item title="构建返回参数: 请于成功创建基本信息后进行" name="3">
+                  <el-table
+                    :data="this.rspTable"
+                    style="width: 100%;margin-bottom: 20px;"
+                    rowKey="id" size="medium"
+                    border fit
+                    default-expand-all
+                    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                    <el-table-column
+                      prop="code"
+                      label="代码"
+                      sortable
+                      width="200">
+                    </el-table-column>
+                    <el-table-column
+                      prop="param_type"
+                      label="类型"
+                      sortable
+                      width="80">
+                    </el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="名称"
+                      sortable
+                      width="180">
+                      <template slot-scope="rq">
+                        <el-input v-model="rq.row.name"></el-input>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="is_require"
+                      label="必填" width="120">
+                      <template slot-scope="rq">
+                        <el-switch
+                          v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949"
+                          active-text="Y" inactive-text="N">
+                        </el-switch>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="is_null"
+                      label="空值" width="120">
+                      <template slot-scope="rq">
+                        <el-switch
+                          v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949"
+                          active-text="Y" inactive-text="N">
+                        </el-switch>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="is_service"
+                      label="有效" width="120">
+                      <template slot-scope="rq">
+                        <el-switch
+                          v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
+                          active-text="Y" inactive-text="N">
+                        </el-switch>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="example"
+                      label="示例"
+                      sortable
+                      width="180">
+                      <template slot-scope="rq">
+                        <el-input v-model="rq.row.example"></el-input>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="rspPmAction" style="text-align: right">
+                    <el-button type="primary" @click="handleSaveParams('rsp')">保存</el-button>
+                  </div>
                 </el-collapse-item>
               </el-collapse>
             </el-dialog>
@@ -266,7 +405,9 @@ export default {
       methodType: [],
       paramType: [],
       projects: [],
-      activeName: 1
+      activeName: 1,
+      rspTable: [],
+      reqTable: []
     }
   },
   methods: {
@@ -301,15 +442,44 @@ export default {
       // 获取请求参数和返回参数的结构
       getData('parse', row).then(val => {
         console.log(val.data.data)
-        // const rspInfo = handleResponse(val)
+        this.reqTable = val.data.data.req
+        this.rspTable = val.data.data.rsp
+      })
+    },
+    handleSaveParams (bType) {
+      if (bType === 'req') {
+        this.saveParams(this.reqTable)
+      } else if (bType === 'rsp') {
+        this.saveParams(this.rspTable)
+      } else {
+        console.log('unknown bType in saveParams: ', bType)
+      }
+    },
+    saveParams (formData) {
+      if (formData.length <= 0) {
+        return this.$notify.success({
+          title: '保存成功',
+          message: '无接口数据,无需保存'
+        })
+      }
+      if (this.infoFm.id === undefined || this.infoFm.id === 0) {
+        this.$notify.warning({
+          title: '提示-丢失接口外键',
+          message: '请确认创建基本信息成功'
+        })
+      }
+      postView('param', this, {
+        api_id: this.infoFm.id,
+        param_list: formData
       })
     },
     handleSaveApi () {
       console.log(this.infoFm)
-      postView('api', this, this.infoFm).then(val => {
-        this.$notify.success({
-          title: '操作成功'
-        })
+      postView('api', this, this.infoFm).then((val) => {
+        if (val.result) {
+          // 追加主键, 主要是为了下一步参数关联接口使用
+          this.infoFm.id = val.data.pk
+        }
       })
     },
     handleCurrentChange (val) {

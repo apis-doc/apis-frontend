@@ -201,9 +201,6 @@ export default {
         putView('project', this, this.dialogForm, this.search)
       }
       this.dialogFormVisible = false
-      this.$notify.success({
-        title: '操作成功'
-      })
     }
   },
   mounted () {

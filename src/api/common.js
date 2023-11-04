@@ -77,7 +77,7 @@ export const getView = (uri, vueObj, formData, pageData) => {
 export const putView = (uri, vueObj, formData, callback) => {
   const params = Object.assign({}, formData)
   console.log('put', uri, params)
-  putData(uri, params).then((response) => {
+  return putData(uri, params).then((response) => {
     const rspInfo = handleResponse(response, true)
     if (!rspInfo.result) {
       return vueObj.$notify.error({
@@ -85,6 +85,9 @@ export const putView = (uri, vueObj, formData, callback) => {
         message: rspInfo.errMsg
       })
     }
+    vueObj.$notify.success({
+      title: '更新成功'
+    })
     if (callback !== undefined) {
       callback()
     }
@@ -97,14 +100,19 @@ export const postView = (uri, vueObj, formData, callback) => {
   return postData(uri, params).then((response) => {
     const rspInfo = handleResponse(response, true)
     if (!rspInfo.result) {
-      return vueObj.$notify.error({
+      vueObj.$notify.error({
         title: '新增失败',
         message: rspInfo.errMsg
       })
+      return rspInfo
     }
-    // To be upgraded: 必须在这里回调,否则是异步的
+    vueObj.$notify.success({
+      title: '新增成功'
+    })
+    // 同步执行的另一种方式
     if (callback !== undefined) {
       callback()
     }
+    return rspInfo
   })
 }
