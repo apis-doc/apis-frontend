@@ -17,10 +17,9 @@
             <el-input v-model="formInline.code" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item label="所属项目">
-
-            <el-select v-model="formInline.method" placeholder="所属项目">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+            <el-select v-model="formInline.owner_id" placeholder="所属项目">
+              <el-option v-for="item in this.projects" :key="item.value" :label="item.label"
+                         :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="状态">
@@ -42,17 +41,18 @@
             </el-select>
           </el-form-item>
           <el-form-item label="method">
-            <el-input v-model="formInline.interface_id" placeholder="请输入内容"></el-input>
+            <el-input v-model="formInline.api_method" placeholder="请输入内容"></el-input>
           </el-form-item>
+          <!--    todo: transfer params    -->
           <el-form-item label="更新时间">
             <div class="block">
-              <el-date-picker
-                v-model="formInline.update_time"
-                type="datetimerange"
-                align="right"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :default-time="['12:00:00', '08:00:00']">
+              <el-date-picker value-format="yyyy-MM-dd hh:mm:ss"
+                              v-model="formInline.update_time"
+                              type="datetimerange" formatter=""
+                              align="right"
+                              start-placeholder="开始日期"
+                              end-placeholder="结束日期"
+                              :default-time="['12:00:00', '08:00:00']">
               </el-date-picker>
             </div>
           </el-form-item>
@@ -111,54 +111,342 @@
             width="180">
           </el-table-column>
           <el-table-column
-            prop="interface_id"
+            prop="api_method"
             label="接口标识"
-            width="180">
+            width="200">
           </el-table-column>
           <el-table-column
             prop="api_name" label="接口名称"
-            width="180">
+            width="200">
           </el-table-column>
           <el-table-column
-            prop="content_type" label="请求体类型"
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="is_login" width="80"
-            label="是否登录">
+            prop="api_type" label="接口类型"
+            width="100">
             <template slot-scope="scope">
-              <el-tag
-                :type="scope.row.is_login ? 'warning' : 'success'"
-                disable-transitions>{{ scope.row.is_login ? '是' : '否' }}
+              <el-tag :type="'primary'">{{ displayHandle(scope.row.api_type, apiType) }}
               </el-tag>
             </template>
           </el-table-column>
-          <!-- todo: api_type, method, state-->
           <el-table-column
-            prop="require_auth" label="权限"
-            width="180">
+            prop="method" width="80"
+            label="请求类型">
+            <template slot-scope="scope">
+              <el-tag :type="'primary'">{{ displayHandle(scope.row.method, methodType) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="state" width="80"
+            label="状态">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.state === 0 ? 'success': 'warning'">
+                {{ displayHandle(scope.row.state, apiState) }}
+              </el-tag>
+            </template>
           </el-table-column>
           <el-table-column
             prop="version" label="版本"
-            width="80">
+            width="60">
           </el-table-column>
-          <!--          state-->
+          <el-table-column
+            prop="owner_id" width="200"
+            label="所属项目">
+            <template slot-scope="scope">
+              <el-tag :type="'primary'">{{ displayHandle(scope.row.owner_id, projects) }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column
             label="维护人" prop="maintainer"
             width="100">
           </el-table-column>
-          <el-table-column
-            label="创建人" prop="create_by"
-            width="100">
-          </el-table-column>
+          s
           <el-table-column
             prop="update_time"
             label="更新时间">
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="100">
             <template slot-scope="scope">
-              <el-button @click="handleSearch(scope.row.id)" type="primary" size="small">修改</el-button>
-              <el-button @click="handleGetDocs(scope.row)" type="primary" size="small">查看</el-button>
+              <el-button @click="onEditBtn(scope.row)" type="text" size="small">修改</el-button>
+              <!--      修改弹框内容-复制自新增弹框,页面不共存怎么共用?        -->
+              <el-dialog
+                title="修改接口"
+                :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%">
+                <el-collapse v-model="activeName" accordion>
+                  <!--       Api         -->
+                  <el-collapse-item title="确认基本信息" name="1">
+                    <el-form ref="form" :model="infoFm" label-width="100px">
+                      <el-form-item label="所属项目">
+                        <el-select v-model="infoFm.owner_id" placeholder="请选择" disabled>
+                          <el-option
+                            v-for="item in projects"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                      <el-form-item label="uri">
+                        <el-input v-model="infoFm.path"></el-input>
+                      </el-form-item>
+                      <el-row style="display: flex">
+                        <el-col :span="14">
+                          <el-form-item label="接口名称" required>
+                            <el-input v-model="infoFm.api_name"></el-input>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="10">
+                          <el-form-item label="接口标识">
+                            <el-input v-model="infoFm.api_method"></el-input>
+                          </el-form-item>
+                        </el-col>
+                      </el-row>
+                      <el-form-item label="描述">
+                        <el-input type="textarea" autosize placeholder="请输入内容"
+                                  v-model="infoFm.describe"></el-input>
+                      </el-form-item>
+                      <el-row>
+                        <el-col :span="8">
+                          <el-form-item label="接口类型">
+                            <el-select v-model="infoFm.api_type" placeholder="请选择">
+                              <el-option
+                                v-for="item in apiType"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                          <el-form-item label="请求类型">
+                            <el-select v-model="infoFm.method" placeholder="请选择">
+                              <el-option
+                                v-for="item in methodType"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                          <el-form-item label="状态">
+                            <el-select v-model="infoFm.state" placeholder="请选择">
+                              <el-option
+                                v-for="item in apiState"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </el-form-item>
+                        </el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="10">
+                          <el-form-item label="请求体类型">
+                            <el-input v-model="infoFm.content_type" type="text"></el-input>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="5">
+                          <el-form-item label="是否需要登录">
+                            <el-switch v-model="infoFm.is_login" active-color="#13ce66"
+                                       inactive-color="#ff4949"></el-switch>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="9">
+                          <el-form-item label="权限">
+                            <el-input v-model="infoFm.require_auth"></el-input>
+                          </el-form-item>
+                        </el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="6">
+                          <el-form-item label="版本">
+                            <el-input v-model="infoFm.version"></el-input>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="18">
+                          <el-form-item label="维护人">
+                            <el-input v-model="infoFm.maintainer"></el-input>
+                          </el-form-item>
+                        </el-col>
+                      </el-row>
+                      <el-form-item label="注意项">
+                        <el-input type="textarea" autosize placeholder="请输入内容"
+                                  v-model="infoFm.Attentions"></el-input>
+                      </el-form-item>
+                      <el-form-item label="备注">
+                        <el-input type="textarea" autosize placeholder="请输入内容"
+                                  v-model="infoFm.note"></el-input>
+                      </el-form-item>
+
+                      <!--         基本信息页的确认接口           -->
+                      <el-form-item size="large" style="text-align: right">
+                        <el-button type="primary" @click="handleSaveApi">保存</el-button>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                  <!--       Req         -->
+                  <el-collapse-item title="修改请求参数" name="2">
+                    <el-table
+                      :data="reqTable"
+                      style="width: 100%;margin-bottom: 20px;"
+                      rowKey="id" size="medium"
+                      border fit
+                      default-expand-all
+                      :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                      <el-table-column
+                        prop="code"
+                        label="代码"
+                        sortable
+                        width="200">
+                      </el-table-column>
+                      <el-table-column
+                        prop="param_type"
+                        label="类型"
+                        sortable
+                        width="80">
+                      </el-table-column>
+                      <el-table-column
+                        prop="name"
+                        label="名称"
+                        sortable
+                        width="180">
+                        <template slot-scope="rq">
+                          <el-input v-model="rq.row.name"></el-input>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_require"
+                        label="必填" width="120">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949"
+                            active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_null"
+                        label="空值" width="120">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949"
+                            active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_service"
+                        label="有效" width="120">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
+                            active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="example"
+                        label="示例"
+                        sortable
+                        width="180">
+                        <template slot-scope="rq">
+                          <el-input v-model="rq.row.example"></el-input>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        label="操作"
+                        width="90">
+                        <template slot-scope="rq">
+                          <el-button type="text" @click="handleSaveParams('rsp', rq.row)">保存</el-button>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </el-collapse-item>
+                  <!--       Rsp         -->
+                  <el-collapse-item title="构建返回参数: 请于成功创建基本信息后进行" name="3">
+                    <el-table
+                      :data="rspTable"
+                      style="width: 100%;margin-bottom: 20px;"
+                      rowKey="id" size="medium"
+                      border fit
+                      default-expand-all
+                      :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                      <el-table-column
+                        prop="code"
+                        label="代码"
+                        sortable
+                        width="200">
+                      </el-table-column>
+                      <el-table-column
+                        prop="param_type"
+                        label="类型"
+                        sortable
+                        width="80">
+                      </el-table-column>
+                      <el-table-column
+                        prop="name"
+                        label="名称"
+                        sortable
+                        width="180">
+                        <template slot-scope="rq">
+                          <el-input v-model="rq.row.name"></el-input>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_require"
+                        label="必填" width="120">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949"
+                            active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_null"
+                        label="空值" width="120">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949"
+                            active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_service"
+                        label="有效" width="120">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
+                            active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="example"
+                        label="示例"
+                        sortable
+                        width="180">
+                        <template slot-scope="rq">
+                          <el-input v-model="rq.row.example"></el-input>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        label="操作"
+                        width="70">
+                        <template slot-scope="rq">
+                          <el-button type="text" @click="handleSaveParams('rsp', rq.row)">保存</el-button>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-dialog>
+              <el-button @click="handleGetDocs(scope.row)" type="text" size="small">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -175,37 +463,91 @@
   </div>
 </template>
 <script>
-import { getData, getView, handleResponse, redirectPage } from '@/api/common'
+import { getData, getView, handleResponse, putView, redirectPage } from '@/api/common'
 import Cookie from 'js-cookie'
 
 export default {
   data () {
     return {
+      apiData: {},
       formInline: {},
       tableData: [],
       pageConfig: {
-        size: 10,
+        size: 8,
         total: 0,
         current: 1
       },
       apiState: [],
       apiType: [],
       methodType: [],
-      paramType: []
+      paramType: [],
+      projects: [],
+      activeName: 1,
+      dialogVisible: false,
+      infoFm: {},
+      rspTable: [],
+      reqTable: []
     }
   },
   methods: {
     indexMethod (index) {
       return index + 1
     },
-    filterMethod (value, row) {
-      return row.method === value
+    displayHandle (value, values) {
+      const valueItem = values.filter(item => item.value === value)
+      return valueItem.length > 0 ? valueItem[0].label : value
     },
     resetForm (formName) {
       this.formInline = Object.assign({}, {})
     },
     onSubmit () {
       this.search()
+    },
+    onEditBtn (row) {
+      this.dialogVisible = true
+      // 通过匹配日志初始化基本信息页表单
+      getData('api', { id: row.id }).then((rsp) => {
+        const rspInfo = handleResponse(rsp)
+        if (rspInfo.result & rspInfo.data.show_info.length === 1) {
+          this.infoFm = rspInfo.data.show_info[0]
+        }
+      })
+      getData('param', {
+        owner_id: row.id,
+        page_size: 10000
+      }).then((rsp) => {
+        const rspInfo = handleResponse(rsp)
+        if (rspInfo.result) {
+          this.rspTable = rspInfo.data.show_info.filter(val =>
+            val.own_type === 'response'
+          )
+          this.reqTable = rspInfo.data.show_info.filter(val =>
+            val.own_type === 'request'
+          )
+        }
+      })
+    },
+    handleSaveParams (bType, row) {
+      if (bType === 'req') {
+        this.saveParams(row)
+      } else if (bType === 'rsp') {
+        this.saveParams(row)
+      } else {
+        console.log('unknown bType in saveParams: ', bType)
+      }
+    },
+    saveParams (formData) {
+      if (formData.length <= 0) {
+        return this.$notify.success({
+          title: '保存成功',
+          message: '无接口数据,无需保存'
+        })
+      }
+      putView('param', this, formData).then(value => this.search())
+    },
+    handleSaveApi () {
+      console.log(this.infoFm)
+      putView('api', this, this.infoFm)
     },
     addApi () {
       redirectPage('log', this.$router, true)
@@ -220,7 +562,7 @@ export default {
     }
   },
   mounted () {
-    // To be upgraded: 下拉菜单选项信息获取
+    // 下拉菜单选项信息获取
     getData('/auth', {}).then((responseData) => {
       const rspInfo = handleResponse(responseData)
       if (rspInfo.result) {
@@ -228,6 +570,17 @@ export default {
         this.apiType = rspInfo.data.api_type
         this.methodType = rspInfo.data.method_type
         this.paramType = rspInfo.data.param_type
+      }
+    })
+    getData('/project', { page_size: 10000 }).then((responseData) => {
+      const rspInfo = handleResponse(responseData)
+      if (rspInfo.result) {
+        rspInfo.data.show_info.forEach((p) => {
+          this.projects.push({
+            label: p.name,
+            value: p.id
+          })
+        })
       }
     })
     // To be upgraded: 注意从项目页跳过来需要从cookie获取owner_id

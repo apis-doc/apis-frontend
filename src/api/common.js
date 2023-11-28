@@ -71,6 +71,7 @@ export const getView = (uri, vueObj, formData, pageData) => {
     }
     vueObj.tableData = rspInfo.data.show_info
     vueObj.pageConfig.total = rspInfo.data.count
+    return rspInfo
   })
 }
 
@@ -115,4 +116,21 @@ export const postView = (uri, vueObj, formData, callback) => {
     }
     return rspInfo
   })
+}
+
+export const getChildren = (table) => {
+  const res = []
+  table.forEach((item) => {
+    item.children = []
+    if (item.parent_id === undefined || item.parent_id === 0) {
+      table.forEach((v) => {
+        if (v.parent_id === item.id) {
+          v.children = []
+          item.children.push(v)
+        }
+      })
+      res.push(item)
+    }
+  })
+  return res
 }

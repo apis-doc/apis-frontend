@@ -42,7 +42,7 @@
                   <el-tag>{{ props.row.req }}</el-tag>
                 </el-form-item>
                 <el-form-item label="返回示例">
-                  <el-tag type="success">{{ props.row.rsp }}</el-tag>
+                  <el-tag type="success">{{ parseJson(props.row.rsp) }}</el-tag>
                 </el-form-item>
                 <el-form-item label="异常信息">
                   <el-tag type="danger">{{ props.row.err }}</el-tag>
@@ -128,7 +128,7 @@
                       </el-col>
                       <el-col :span="10">
                         <el-form-item label="接口标识">
-                          <el-input v-model="infoFm.interface_id"></el-input>
+                          <el-input v-model="infoFm.api_method"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -280,15 +280,15 @@
                         </el-switch>
                       </template>
                     </el-table-column>
-                    <!--                    <el-table-column-->
-                    <!--                      prop="example"-->
-                    <!--                      label="示例"-->
-                    <!--                      sortable-->
-                    <!--                      width="180">-->
-                    <!--                      <template slot-scope="rq">-->
-                    <!--                        <el-input v-model="rq.row.example"></el-input>-->
-                    <!--                      </template>-->
-                    <!--                    </el-table-column>-->
+                    <el-table-column
+                      prop="example"
+                      label="示例"
+                      sortable
+                      width="180">
+                      <template slot-scope="rq">
+                        <el-input v-model="rq.row.example"></el-input>
+                      </template>
+                    </el-table-column>
                   </el-table>
                   <div class="rspPmAction" style="text-align: right">
                     <el-button type="primary" @click="handleSaveParams('req')">保存</el-button>
@@ -414,6 +414,12 @@ export default {
     indexMethod (index) {
       return index + 1
     },
+    parseJson (str) {
+      console.log('origin: ', str)
+      const jStr = JSON.parse(str)
+      console.log(JSON.stringify(jStr, null, 2))
+      return JSON.stringify(jStr, null, '\t')
+    },
     filterMethod (value, row) {
       return row.method === value
     },
@@ -428,7 +434,7 @@ export default {
       // 通过匹配日志初始化基本信息页表单
       this.infoFm = {
         path: row.path,
-        interface_id: row.interface_id,
+        api_method: row.interface_id,
         api_type: row.api_type,
         method: row.method,
         content_type: row.content_type,
@@ -440,7 +446,7 @@ export default {
         state: 4
       }
       // 获取请求参数和返回参数的结构
-      getData('parse', row).then(val => {
+      getData('parse', { id: row.id }).then(val => {
         console.log(val.data.data)
         this.reqTable = val.data.data.req
         this.rspTable = val.data.data.rsp
@@ -448,14 +454,14 @@ export default {
     },
     handleSaveParams (bType) {
       if (bType === 'req') {
-        this.saveParams(this.reqTable)
+        this.saveParams(this.reqTable, bType)
       } else if (bType === 'rsp') {
-        this.saveParams(this.rspTable)
+        this.saveParams(this.rspTable, bType)
       } else {
         console.log('unknown bType in saveParams: ', bType)
       }
     },
-    saveParams (formData) {
+    saveParams (formData, ownType) {
       if (formData.length <= 0) {
         return this.$notify.success({
           title: '保存成功',
@@ -470,7 +476,8 @@ export default {
       }
       postView('param', this, {
         api_id: this.infoFm.id,
-        param_list: formData
+        param_list: formData,
+        own_type: ownType
       })
     },
     handleSaveApi () {
