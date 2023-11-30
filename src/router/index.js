@@ -9,6 +9,7 @@ import MeView from '@/views/MeView.vue'
 import UserConfigView from '@/views/UserConfigView.vue'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
+import DocView from '@/views/DocView'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,10 @@ const routes = [
       {
         path: 'api',
         component: ApiView
+      },
+      {
+        path: 'doc',
+        component: DocView
       },
       {
         path: 'project',
