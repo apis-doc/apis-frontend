@@ -13,25 +13,25 @@
       </div>
     </div>
   </template>
-  <script>
-  
-  export default {
-    data () {
-      return {}
-    }
+<script>
+
+export default {
+  data () {
+    return {}
   }
-  </script>
-  
+}
+</script>
+
   <style scoped>
   .top-action {
     padding: 20px 20px 0px 20px;
     text-align: left;
   }
-  
+
   .content {
     padding: 0px 20px 10px 20px;
     position: relative;
-  
+
     .pager {
       position: absolute;
       buttom: 0;
@@ -40,4 +40,3 @@
     }
   }
   </style>
-  

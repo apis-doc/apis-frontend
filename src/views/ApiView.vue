@@ -171,8 +171,15 @@
               <!--      修改弹框内容-复制自新增弹框,页面不共存怎么共用?        -->
               <el-dialog
                 title="修改接口"
-                :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%">
+                :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%" :before-close="handleCloseOuterDialog">
                 <el-collapse v-model="activeName" accordion>
+                  <!-- 内层发布逻辑 -->
+                  <el-dialog width="30%" title="是否需要发布? 发布会产生有一条文档历史" :visible.sync="innerVisible" append-to-body>
+                    <div style="text-align: right;">
+                      <el-button @click="innerVisible = false, dialogVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="publicApi(scope.row.id)">发 布</el-button>
+                    </div>
+                  </el-dialog>
                   <!--       Api         -->
                   <el-collapse-item title="确认基本信息" name="1">
                     <el-form ref="form" :model="infoFm" label-width="100px">
@@ -484,6 +491,7 @@ export default {
       projects: [],
       activeName: 1,
       dialogVisible: false,
+      innerVisible: false,
       infoFm: {},
       rspTable: [],
       reqTable: []
@@ -559,6 +567,14 @@ export default {
     },
     search () {
       getView('api', this, this.formInline, this.pageConfig)
+    },
+    handleCloseOuterDialog () {
+      this.innerVisible = true
+    },
+    publicApi (id) {
+      console.log('public: ', id)
+      this.innerVisible = false
+      this.dialogVisible = false
     }
   },
   mounted () {
