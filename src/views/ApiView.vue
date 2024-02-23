@@ -106,6 +106,13 @@
             :index="indexMethod">
           </el-table-column>
           <el-table-column
+            label="id"
+            width="40">
+            <template slot-scope="rq">
+              {{ rq.row.origin_id || rq.row.id }}
+            </template>
+          </el-table-column>
+          <el-table-column
             prop="path"
             label="uri"
             width="180">
@@ -160,7 +167,6 @@
             label="维护人" prop="maintainer"
             width="100">
           </el-table-column>
-          s
           <el-table-column
             prop="update_time"
             label="更新时间">
@@ -171,12 +177,14 @@
               <!--      修改弹框内容-复制自新增弹框,页面不共存怎么共用?        -->
               <el-dialog
                 title="修改接口"
-                :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%" :before-close="handleCloseOuterDialog">
+                :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%"
+                :before-close="handleCloseOuterDialog">
                 <el-collapse v-model="activeName" accordion>
                   <!-- 内层发布逻辑 -->
-                  <el-dialog width="30%" title="是否需要发布? 发布会产生有一条文档历史" :visible.sync="innerVisible" append-to-body>
+                  <el-dialog width="30%" title="是否需要发布? 发布会产生有一条文档历史" :visible.sync="innerVisible"
+                             append-to-body>
                     <div style="text-align: right;">
-                      <el-button @click="innerVisible = false, dialogVisible = false">取 消</el-button>
+                      <el-button @click="innerVisible = false, dialogVisible = false">不发布</el-button>
                       <el-button type="primary" @click="publicApi(scope.row.id)">发 布</el-button>
                     </div>
                   </el-dialog>
@@ -326,32 +334,29 @@
                         </template>
                       </el-table-column>
                       <el-table-column
-                        prop="is_require"
-                        label="必填" width="120">
+                        prop="is_service" sortable
+                        label="是否服务" width="105">
+                        <template slot-scope="rq">
+                          <el-switch v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
+                                     active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_require" sortable
+                        label="必填" width="75">
                         <template slot-scope="rq">
                           <el-switch
                             v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949"
-                            active-text="Y" inactive-text="N">
+                          >
                           </el-switch>
                         </template>
                       </el-table-column>
                       <el-table-column
                         prop="is_null"
-                        label="空值" width="120">
+                        label="空值" width="65">
                         <template slot-scope="rq">
-                          <el-switch
-                            v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949"
-                            active-text="Y" inactive-text="N">
-                          </el-switch>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        prop="is_service"
-                        label="有效" width="120">
-                        <template slot-scope="rq">
-                          <el-switch
-                            v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
-                            active-text="Y" inactive-text="N">
+                          <el-switch v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949">
                           </el-switch>
                         </template>
                       </el-table-column>
@@ -362,6 +367,15 @@
                         width="180">
                         <template slot-scope="rq">
                           <el-input v-model="rq.row.example"></el-input>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="note"
+                        label="备注"
+                        width="180">
+                        <template slot-scope="rq">
+                          <el-input placeholder="请输入内容"
+                                    v-model="rq.row.note"></el-input>
                         </template>
                       </el-table-column>
                       <el-table-column
@@ -404,32 +418,30 @@
                         </template>
                       </el-table-column>
                       <el-table-column
-                        prop="is_require"
-                        label="必填" width="120">
+                        prop="is_service" sortable
+                        label="是否服务" width="105">
                         <template slot-scope="rq">
                           <el-switch
-                            v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949"
+                            v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
                             active-text="Y" inactive-text="N">
+                          </el-switch>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="is_require" sortable
+                        label="必填" width="75">
+                        <template slot-scope="rq">
+                          <el-switch
+                            v-model="rq.row.is_require" active-color="#13ce66" inactive-color="#ff4949">
                           </el-switch>
                         </template>
                       </el-table-column>
                       <el-table-column
                         prop="is_null"
-                        label="空值" width="120">
+                        label="空值" width="65">
                         <template slot-scope="rq">
                           <el-switch
-                            v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949"
-                            active-text="Y" inactive-text="N">
-                          </el-switch>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        prop="is_service"
-                        label="有效" width="120">
-                        <template slot-scope="rq">
-                          <el-switch
-                            v-model="rq.row.is_service" active-color="#13ce66" inactive-color="#ff4949"
-                            active-text="Y" inactive-text="N">
+                            v-model="rq.row.is_null" active-color="#13ce66" inactive-color="#ff4949">
                           </el-switch>
                         </template>
                       </el-table-column>
@@ -440,6 +452,14 @@
                         width="180">
                         <template slot-scope="rq">
                           <el-input v-model="rq.row.example"></el-input>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        prop="note"
+                        label="备注"
+                        width="180">
+                        <template slot-scope="rq">
+                          <el-input v-model="rq.row.note"></el-input>
                         </template>
                       </el-table-column>
                       <el-table-column

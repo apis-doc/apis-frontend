@@ -101,7 +101,7 @@
             </template>
             <!--     新增接口       -->
             <el-dialog
-              title="新增接口: 您可从刚选定的日志中提取接口信息"
+              title="新增接口: 您可从刚选定的日志中提取接口信息, 请注意选择包含所有可选参数的日志记录"
               :visible.sync="dialogVisible" :append-to-body="true" class="addFm" width="60%">
               <el-collapse v-model="activeName" accordion>
                 <!--       Api         -->
